@@ -14,10 +14,17 @@
         .loading {
             display: none;
         }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
-    <header class="bg-white shadow">
+    <header class="bg-white shadow sticky top-0 z-10">
         <div class="container mx-auto px-4 py-4 flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <img alt="Logo icon with a stylized medical cross and stethoscope in blue and white" class="w-12 h-12 rounded-full" height="48" src="https://storage.googleapis.com/a1aa/image/a28d8e5f-8330-48e8-f73b-f521658c00d6.jpg" width="48"/>
@@ -117,10 +124,12 @@
                 <div class="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-4 md:space-y-0">
                     <input type="password" id="adminPassword" placeholder="Enter admin password" class="border p-2 rounded flex-grow"/>
                     <button onclick="showAppointments()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Appointments</button>
+                    <button onclick="refreshAppointmentsList()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Refresh</button>
                     <button onclick="clearAllAppointments()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">Clear All</button>
                 </div>
+                
             </div>
-            <div id="appointments-list" class="hidden space-y-4"></div>
+            <div id="appointments-list" class="hidden space-y-4 fade-in"></div>
         </section>
 
         <!-- About Section -->
@@ -157,6 +166,14 @@
     </footer>
 
     <script>
+        // Event system for real-time updates
+        const EVENT_APPOINTMENTS_UPDATED = 'appointmentsUpdated';
+        
+        // Custom event system for real-time updates
+        function triggerAppointmentsUpdate() {
+            window.dispatchEvent(new CustomEvent(EVENT_APPOINTMENTS_UPDATED));
+        }
+
         // API Service (Mock Backend)
         class AppointmentAPI {
             static baseURL = 'https://mock-api.com'; // This would be your actual backend URL
@@ -232,6 +249,9 @@
                 appointments.push(appointmentData);
                 localStorage.setItem('appointments', JSON.stringify(appointments));
                 
+                // Trigger update event
+                triggerAppointmentsUpdate();
+                
                 return {
                     success: true,
                     appointmentId: appointmentData.id,
@@ -250,6 +270,10 @@
 
             static async clearAppointments() {
                 localStorage.removeItem('appointments');
+                
+                // Trigger update event
+                triggerAppointmentsUpdate();
+                
                 return { success: true, message: 'All appointments cleared' };
             }
         }
@@ -281,6 +305,15 @@
             
             // Initialize event listeners
             setupEventListeners();
+            
+            // Listen for appointment updates
+            window.addEventListener(EVENT_APPOINTMENTS_UPDATED, function() {
+                // If admin panel is open, refresh it
+                const appointmentsList = document.getElementById('appointments-list');
+                if (!appointmentsList.classList.contains('hidden')) {
+                    refreshAppointmentsList();
+                }
+            });
         }
 
         async function loadDoctors() {
@@ -295,7 +328,7 @@
 
         function renderDoctors(doctors) {
             doctorsContainer.innerHTML = doctors.map(doctor => `
-                <article class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center text-center">
+                <article class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center text-center fade-in">
                     <img alt="Portrait of ${doctor.name}" class="w-36 h-36 rounded-full object-cover mb-4" src="${doctor.image}"/>
                     <h4 class="text-xl font-semibold text-gray-900">${doctor.name}</h4>
                     <p class="text-blue-600 font-medium mb-2">${doctor.specialty}</p>
@@ -382,7 +415,7 @@
 
         function showMessage(message, type) {
             confirmationMessage.textContent = message;
-            confirmationMessage.className = 'mt-6 p-4 rounded';
+            confirmationMessage.className = 'mt-6 p-4 rounded fade-in';
             
             if (type === 'success') {
                 confirmationMessage.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
@@ -405,17 +438,21 @@
                 return;
             }
 
+            await refreshAppointmentsList();
+        }
+
+        async function refreshAppointmentsList() {
             try {
                 const appointments = await AppointmentAPI.getAppointments();
                 const list = document.getElementById('appointments-list');
                 
                 if (appointments.length === 0) {
-                    list.innerHTML = '<p class="text-gray-600">No appointments found.</p>';
+                    list.innerHTML = '<p class="text-gray-600 text-center py-4">No appointments found.</p>';
                 } else {
                     list.innerHTML = `
                         <h4 class="text-xl font-semibold mb-4">Appointments (${appointments.length})</h4>
                         ${appointments.map(apt => `
-                            <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                            <div class="border border-gray-200 rounded-lg p-4 bg-white fade-in">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <p><strong>Appointment ID:</strong> ${apt.id}</p>
@@ -429,6 +466,11 @@
                                     </div>
                                 </div>
                                 ${apt.notes ? `<p class="mt-2"><strong>Notes:</strong> ${apt.notes}</p>` : ''}
+                                <div class="mt-3 flex justify-end">
+                                    <button onclick="deleteAppointment(${apt.id})" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition">
+                                        <i class="fas fa-trash mr-1"></i> Delete
+                                    </button>
+                                </div>
                             </div>
                         `).join('')}
                     `;
@@ -439,13 +481,41 @@
             }
         }
 
+        async function deleteAppointment(appointmentId) {
+            if (confirm('Are you sure you want to delete this appointment?')) {
+                try {
+                    const appointments = AppointmentAPI.getStoredAppointments();
+                    const filteredAppointments = appointments.filter(apt => apt.id !== appointmentId);
+                    localStorage.setItem('appointments', JSON.stringify(filteredAppointments));
+                    
+                    // Trigger update event
+                    triggerAppointmentsUpdate();
+                    
+                    // Show confirmation
+                    const list = document.getElementById('appointments-list');
+                    list.innerHTML = '<p class="text-green-600 text-center py-4">Appointment deleted successfully.</p>';
+                    
+                    // Refresh after a short delay
+                    setTimeout(refreshAppointmentsList, 1500);
+                } catch (error) {
+                    console.error('Error deleting appointment:', error);
+                    showMessage('Error deleting appointment. Please try again.', 'error');
+                }
+            }
+        }
+
         async function clearAllAppointments() {
-            if (confirm('Are you sure you want to clear all appointments?')) {
+            if (confirm('Are you sure you want to clear all appointments? This action cannot be undone.')) {
                 try {
                     await AppointmentAPI.clearAppointments();
-                    document.getElementById('appointments-list').innerHTML = '<p class="text-green-600">All appointments cleared successfully.</p>';
+                    const list = document.getElementById('appointments-list');
+                    list.innerHTML = '<p class="text-green-600 text-center py-4">All appointments cleared successfully.</p>';
+                    
+                    // Auto-refresh after 2 seconds to show empty state
+                    setTimeout(refreshAppointmentsList, 2000);
                 } catch (error) {
                     console.error('Error clearing appointments:', error);
+                    showMessage('Error clearing appointments. Please try again.', 'error');
                 }
             }
         }
