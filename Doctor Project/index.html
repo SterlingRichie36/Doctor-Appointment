@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <title>Doctor Appointment Application</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .loading {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <header class="bg-white shadow">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <img alt="Logo icon with a stylized medical cross and stethoscope in blue and white" class="w-12 h-12 rounded-full" height="48" src="https://storage.googleapis.com/a1aa/image/a28d8e5f-8330-48e8-f73b-f521658c00d6.jpg" width="48"/>
+                <h1 class="text-2xl font-semibold text-blue-700">Well being Hospital</h1>
+            </div>
+            <nav class="hidden md:flex space-x-8 text-gray-700 font-medium">
+                <a class="hover:text-blue-600 transition" href="#doctors">Doctors</a>
+                <a class="hover:text-blue-600 transition" href="#appointment">Book Appointment</a>
+                <a class="hover:text-blue-600 transition" href="#admin">Admin</a>
+                <a class="hover:text-blue-600 transition" href="#about">About</a>
+                <a class="hover:text-blue-600 transition" href="#contact">Contact</a>
+            </nav>
+            <button aria-label="Toggle menu" class="md:hidden text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600" id="mobile-menu-button">
+                <i class="fas fa-bars fa-lg"></i>
+            </button>
+        </div>
+        <nav aria-label="Mobile menu" class="hidden md:hidden bg-white border-t border-gray-200" id="mobile-menu">
+            <a class="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition" href="#doctors">Doctors</a>
+            <a class="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition" href="#appointment">Book Appointment</a>
+            <a class="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition" href="#admin">Admin</a>
+            <a class="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition" href="#about">About</a>
+            <a class="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition" href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-10">
+        <!-- Hero Section -->
+        <section class="text-center max-w-3xl mx-auto mb-16">
+            <h2 class="text-4xl font-extrabold text-blue-700 mb-4">Book Your Doctor Appointment Easily</h2>
+            <p class="text-gray-600 text-lg">Find the best doctors near you and schedule your appointment in just a few clicks.</p>
+        </section>
+
+        <!-- Doctors Section -->
+        <section class="mb-20" id="doctors">
+            <h3 class="text-3xl font-semibold text-blue-700 mb-8 text-center">Our Doctors</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto" id="doctors-container">
+                <!-- Doctors will be loaded dynamically -->
+            </div>
+        </section>
+
+        <!-- Appointment Form Section -->
+        <section class="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-8 mb-20" id="appointment">
+            <h3 class="text-3xl font-semibold text-blue-700 mb-6 text-center">Book an Appointment</h3>
+            <form class="space-y-6" id="appointment-form">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2" for="doctor">Select Doctor</label>
+                    <select class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" id="doctor" name="doctor" required>
+                        <option disabled selected value="">-- Choose a doctor --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2" for="fullName">Full Name</label>
+                    <input class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" id="fullName" name="fullName" placeholder="Your full name" required type="text"/>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2" for="email">Email Address</label>
+                    <input class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" id="email" name="email" placeholder="you@example.com" required type="email"/>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2" for="phone">Phone Number</label>
+                    <input class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" id="phone" name="phone" pattern="^\+?[0-9\s\-]{7,15}$" placeholder="+1 (555) 123-4567" required type="tel"/>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2" for="date">Preferred Date</label>
+                    <input class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" id="date" name="date" required type="date"/>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2" for="time">Preferred Time</label>
+                    <select class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" id="time" name="time" required>
+                        <option value="">Select a time</option>
+                        <option value="09:00">09:00 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="14:00">02:00 PM</option>
+                        <option value="15:00">03:00 PM</option>
+                        <option value="16:00">04:00 PM</option>
+                        <option value="17:00">05:00 PM</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2" for="notes">Additional Notes</label>
+                    <textarea class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none" id="notes" name="notes" placeholder="Any specific concerns or requests" rows="3"></textarea>
+                </div>
+                <button class="w-full bg-blue-600 text-white font-semibold py-3 rounded hover:bg-blue-700 transition flex items-center justify-center" type="submit">
+                    <span class="loading hidden"><i class="fas fa-spinner fa-spin mr-2"></i></span>
+                    Confirm Appointment
+                </button>
+            </form>
+            <div class="hidden mt-6 p-4 rounded" id="confirmation-message" role="alert"></div>
+        </section>
+
+        <!-- Admin Panel Section -->
+        <section class="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-8 mb-20" id="admin">
+            <h3 class="text-3xl font-semibold text-blue-700 mb-6 text-center">Admin Panel</h3>
+            <div class="bg-gray-100 p-4 rounded-lg mb-6">
+                <div class="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-4 md:space-y-0">
+                    <input type="password" id="adminPassword" placeholder="Enter admin password" class="border p-2 rounded flex-grow"/>
+                    <button onclick="showAppointments()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Appointments</button>
+                    <button onclick="clearAllAppointments()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">Clear All</button>
+                </div>
+            </div>
+            <div id="appointments-list" class="hidden space-y-4"></div>
+        </section>
+
+        <!-- About Section -->
+        <section class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-8 mb-20" id="about">
+            <h3 class="text-3xl font-semibold text-blue-700 mb-6 text-center">About Well Being Hospital</h3>
+            <p class="text-gray-700 text-lg leading-relaxed">
+                Well Being Hospital is a user-friendly platform designed to connect patients with trusted doctors in various specialties. 
+                Our goal is to simplify the appointment booking process, making healthcare more accessible and convenient for everyone. 
+                Whether you need a routine checkup or a specialist consultation, Well Being Hospital helps you find the right doctor and schedule your visit with ease.
+            </p>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-8" id="contact">
+            <h3 class="text-3xl font-semibold text-blue-700 mb-6 text-center">Contact Us</h3>
+            <div class="flex flex-col md:flex-row md:space-x-12">
+                <div class="mb-8 md:mb-0 md:w-1/2">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-4">Address</h4>
+                    <p class="text-gray-700">23, Sterling St.<br>Sydney, HC 45678<br>Australia</p>
+                    <h4 class="text-xl font-semibold text-gray-900 mt-8 mb-4">Phone</h4>
+                    <p class="text-gray-700">+1 (555) 123-4567</p>
+                    <h4 class="text-xl font-semibold text-gray-900 mt-8 mb-4">Email</h4>
+                    <p class="text-gray-700">support@wellbeinghospital.com</p>
+                </div>
+                <div class="md:w-1/2">
+                    <img alt="Bright and modern medical clinic reception area" class="rounded-lg shadow-md w-full h-64 object-cover" src="https://storage.googleapis.com/a1aa/image/2a7d644e-7999-475a-9ab2-cd7544a33b8a.jpg"/>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 py-6 mt-20">
+        <div class="container mx-auto px-4 text-center text-gray-600 text-sm">© 2024 Well Being Hospital. All rights reserved.</div>
+    </footer>
+
+    <script>
+        // API Service (Mock Backend)
+        class AppointmentAPI {
+            static baseURL = 'https://mock-api.com'; // This would be your actual backend URL
+            
+            static async getDoctors() {
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Mock data - in real app, this would come from your backend
+                return [
+                    {
+                        id: 1,
+                        name: "Dr. Alice Smith",
+                        specialty: "Cardiologist",
+                        image: "https://storage.googleapis.com/a1aa/image/4f01e17c-c144-4a95-1f78-b36116685610.jpg",
+                        description: "Expert in heart health and cardiovascular diseases with 10 years of experience.",
+                        available: true
+                    },
+                    {
+                        id: 2,
+                        name: "Dr. John Doe",
+                        specialty: "Pediatrician",
+                        image: "https://storage.googleapis.com/a1aa/image/a89d38ec-1627-4fad-af2d-83f5c3da1f1a.jpg",
+                        description: "Caring for children's health and wellness with over 8 years of pediatric experience.",
+                        available: true
+                    },
+                    {
+                        id: 3,
+                        name: "Dr. Maria Lopez",
+                        specialty: "Dermatologist",
+                        image: "https://storage.googleapis.com/a1aa/image/ee0515b6-c7f7-4a52-b415-d40909f4a292.jpg",
+                        description: "Specialist in skin care and treatment with 12 years of clinical experience.",
+                        available: true
+                    },
+                    {
+                        id: 4,
+                        name: "Dr. David Nguyen",
+                        specialty: "Neurologist",
+                        image: "https://storage.googleapis.com/a1aa/image/9f3f63d3-7840-4fae-3699-1cfc387017a3.jpg",
+                        description: "Experienced neurologist focusing on brain and nervous system disorders.",
+                        available: true
+                    },
+                    {
+                        id: 5,
+                        name: "Dr. Emma Johnson",
+                        specialty: "General Practitioner",
+                        image: "https://storage.googleapis.com/a1aa/image/b0dcd950-d2de-47e2-3a53-88b50bec994b.jpg",
+                        description: "Providing comprehensive primary care and health advice for all ages.",
+                        available: true
+                    },
+                    {
+                        id: 6,
+                        name: "Dr. Michael Brown",
+                        specialty: "Orthopedic Surgeon",
+                        image: "https://storage.googleapis.com/a1aa/image/f7709932-2855-49d4-32c6-d24c6f957740.jpg",
+                        description: "Specialist in bone and joint surgery with 15 years of surgical experience.",
+                        available: true
+                    }
+                ];
+            }
+
+            static async bookAppointment(appointmentData) {
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Generate unique ID
+                appointmentData.id = Date.now();
+                appointmentData.status = 'confirmed';
+                appointmentData.createdAt = new Date().toISOString();
+                
+                // Store in localStorage (mock database)
+                const appointments = this.getStoredAppointments();
+                appointments.push(appointmentData);
+                localStorage.setItem('appointments', JSON.stringify(appointments));
+                
+                return {
+                    success: true,
+                    appointmentId: appointmentData.id,
+                    message: 'Appointment booked successfully'
+                };
+            }
+
+            static async getAppointments() {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                return this.getStoredAppointments();
+            }
+
+            static getStoredAppointments() {
+                return JSON.parse(localStorage.getItem('appointments')) || [];
+            }
+
+            static async clearAppointments() {
+                localStorage.removeItem('appointments');
+                return { success: true, message: 'All appointments cleared' };
+            }
+        }
+
+        // DOM Elements
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const dateInput = document.getElementById('date');
+        const doctorSelect = document.getElementById('doctor');
+        const form = document.getElementById('appointment-form');
+        const confirmationMessage = document.getElementById('confirmation-message');
+        const doctorsContainer = document.getElementById('doctors-container');
+        const submitButton = form.querySelector('button[type="submit"]');
+        const loadingSpinner = submitButton.querySelector('.loading');
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            // Set min date to today
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+            dateInput.value = today;
+
+            // Load doctors
+            await loadDoctors();
+            
+            // Initialize event listeners
+            setupEventListeners();
+        }
+
+        async function loadDoctors() {
+            try {
+                const doctors = await AppointmentAPI.getDoctors();
+                renderDoctors(doctors);
+                populateDoctorSelect(doctors);
+            } catch (error) {
+                console.error('Error loading doctors:', error);
+            }
+        }
+
+        function renderDoctors(doctors) {
+            doctorsContainer.innerHTML = doctors.map(doctor => `
+                <article class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center text-center">
+                    <img alt="Portrait of ${doctor.name}" class="w-36 h-36 rounded-full object-cover mb-4" src="${doctor.image}"/>
+                    <h4 class="text-xl font-semibold text-gray-900">${doctor.name}</h4>
+                    <p class="text-blue-600 font-medium mb-2">${doctor.specialty}</p>
+                    <p class="text-gray-600 mb-4">${doctor.description}</p>
+                    <button class="book-btn bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition" 
+                            data-doctor="${doctor.name}" data-specialty="${doctor.specialty}">
+                        Book Appointment
+                    </button>
+                </article>
+            `).join('');
+        }
+
+        function populateDoctorSelect(doctors) {
+            doctorSelect.innerHTML = '<option disabled selected value="">-- Choose a doctor --</option>' +
+                doctors.map(doctor => 
+                    `<option value="${doctor.name} - ${doctor.specialty}">${doctor.name} - ${doctor.specialty}</option>`
+                ).join('');
+        }
+
+        function setupEventListeners() {
+            // Mobile menu toggle
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Book appointment buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('book-btn')) {
+                    const doctorName = e.target.getAttribute('data-doctor');
+                    const specialty = e.target.getAttribute('data-specialty');
+                    const optionValue = `${doctorName} - ${specialty}`;
+                    
+                    for (let option of doctorSelect.options) {
+                        if (option.value === optionValue) {
+                            doctorSelect.value = optionValue;
+                            break;
+                        }
+                    }
+                    
+                    document.getElementById('appointment').scrollIntoView({ 
+                        behavior: 'smooth' 
+                    });
+                }
+            });
+
+            // Form submission
+            form.addEventListener('submit', handleFormSubmit);
+
+            // Close mobile menu when clicking links
+            const mobileLinks = document.querySelectorAll('#mobile-menu a');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const appointmentData = Object.fromEntries(formData.entries());
+            
+            // Show loading
+            loadingSpinner.classList.remove('hidden');
+            submitButton.disabled = true;
+
+            try {
+                const result = await AppointmentAPI.bookAppointment(appointmentData);
+                
+                if (result.success) {
+                    showMessage('Appointment booked successfully! We will contact you soon.', 'success');
+                    form.reset();
+                    dateInput.value = new Date().toISOString().split('T')[0];
+                }
+            } catch (error) {
+                showMessage('Error booking appointment. Please try again.', 'error');
+                console.error('Booking error:', error);
+            } finally {
+                loadingSpinner.classList.add('hidden');
+                submitButton.disabled = false;
+            }
+        }
+
+        function showMessage(message, type) {
+            confirmationMessage.textContent = message;
+            confirmationMessage.className = 'mt-6 p-4 rounded';
+            
+            if (type === 'success') {
+                confirmationMessage.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
+            } else {
+                confirmationMessage.classList.add('bg-red-100', 'border-red-400', 'text-red-700');
+            }
+            
+            confirmationMessage.classList.remove('hidden');
+            
+            setTimeout(() => {
+                confirmationMessage.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Admin functions
+        async function showAppointments() {
+            const password = document.getElementById('adminPassword').value;
+            if (password !== 'admin123') {
+                alert('Invalid password');
+                return;
+            }
+
+            try {
+                const appointments = await AppointmentAPI.getAppointments();
+                const list = document.getElementById('appointments-list');
+                
+                if (appointments.length === 0) {
+                    list.innerHTML = '<p class="text-gray-600">No appointments found.</p>';
+                } else {
+                    list.innerHTML = `
+                        <h4 class="text-xl font-semibold mb-4">Appointments (${appointments.length})</h4>
+                        ${appointments.map(apt => `
+                            <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <p><strong>Appointment ID:</strong> ${apt.id}</p>
+                                        <p><strong>Patient:</strong> ${apt.fullName}</p>
+                                        <p><strong>Doctor:</strong> ${apt.doctor}</p>
+                                    </div>
+                                    <div>
+                                        <p><strong>Date:</strong> ${apt.date} at ${apt.time}</p>
+                                        <p><strong>Contact:</strong> ${apt.phone} | ${apt.email}</p>
+                                        <p><strong>Status:</strong> <span class="text-green-600 font-semibold">${apt.status}</span></p>
+                                    </div>
+                                </div>
+                                ${apt.notes ? `<p class="mt-2"><strong>Notes:</strong> ${apt.notes}</p>` : ''}
+                            </div>
+                        `).join('')}
+                    `;
+                }
+                list.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error loading appointments:', error);
+            }
+        }
+
+        async function clearAllAppointments() {
+            if (confirm('Are you sure you want to clear all appointments?')) {
+                try {
+                    await AppointmentAPI.clearAppointments();
+                    document.getElementById('appointments-list').innerHTML = '<p class="text-green-600">All appointments cleared successfully.</p>';
+                } catch (error) {
+                    console.error('Error clearing appointments:', error);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
